@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>乒乓球</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a1a;
+      font-family: 'Press Start 2P', monospace;
+      overflow: hidden;
+    }
+
+    .back-btn {
+      position: fixed; top: 20px; left: 20px;
+      color: #666; font-size: 10px; text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+      transition: color 0.2s; z-index: 100;
+    }
+    .back-btn:hover { color: #00ff88; }
+    .back-btn::before { content: '\2190'; }
+
+    .game-container {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 20px;
+    }
+
+    .score-board {
+      display: flex; gap: 80px; color: #fff; font-size: 14px;
+    }
+    .score-item { text-align: center; }
+    .score-label { color: #888; font-size: 10px; margin-bottom: 8px; }
+    .score-value { color: #00ff88; font-size: 20px; }
+
+    #gameCanvas {
+      border: 4px solid #ff6b35;
+      border-radius: 8px;
+      box-shadow: 0 0 40px rgba(255, 107, 53, 0.3);
+    }
+
+    .controls {
+      color: #666; font-size: 8px; text-align: center; line-height: 1.8;
+    }
+    .controls span { color: #ff6b35; }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-btn">BACK</a>
+  <div class="game-container">
+    <div class="score-board">
+      <div class="score-item">
+        <div class="score-label">P1</div>
+        <div class="score-value" id="score1">0</div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">P2</div>
+        <div class="score-value" id="score2">0</div>
+      </div>
+    </div>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <div class="controls">
+      <span>W/S</span> P1 &nbsp;&nbsp; <span>↑↓</span> P2 &nbsp;&nbsp; <span>SPACE</span> 暂停 &nbsp;&nbsp; <span>ENTER</span> 开始
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    const PADDLE_W = 12, PADDLE_H = 80, BALL_R = 8;
+    const WIN_SCORE = 11;
+    const ACCENT = '#ff6b35';
+
+    let p1, p2, ball, gameState, keys;
+
+    function init() {
+      p1 = { x: 20, y: H / 2 - PADDLE_H / 2, score: 0, speed: 6 };
+      p2 = { x: W - 20 - PADDLE_W, y: H / 2 - PADDLE_H / 2, score: 0, speed: 6 };
+      resetBall();
+      gameState = 'start';
+      keys = {};
+    }
+
+    function resetBall() {
+      ball = {
+        x: W / 2, y: H / 2,
+        vx: (Math.random() > 0.5 ? 1 : -1) * 4,
+        vy: (Math.random() - 0.5) * 4,
+        speed: 4
+      };
+    }
+
+    function update() {
+      if (gameState !== 'playing') return;
+
+      if (keys['w'] || keys['W']) p1.y = Math.max(0, p1.y - p1.speed);
+      if (keys['s'] || keys['S']) p1.y = Math.min(H - PADDLE_H, p1.y + p1.speed);
+      if (keys['ArrowUp']) p2.y = Math.max(0, p2.y - p2.speed);
+      if (keys['ArrowDown']) p2.y = Math.min(H - PADDLE_H, p2.y + p2.speed);
+
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+
+      if (ball.y - BALL_R <= 0 || ball.y + BALL_R >= H) {
+        ball.vy *= -1;
+        ball.y = ball.y - BALL_R <= 0 ? BALL_R : H - BALL_R;
+      }
+
+      if (ball.vx < 0 &&
+          ball.x - BALL_R <= p1.x + PADDLE_W &&
+          ball.x + BALL_R >= p1.x &&
+          ball.y >= p1.y && ball.y <= p1.y + PADDLE_H) {
+        ball.vx = Math.abs(ball.vx) * 1.05;
+        const relY = (ball.y - (p1.y + PADDLE_H / 2)) / (PADDLE_H / 2);
+        ball.vy = relY * ball.speed;
+      }
+
+      if (ball.vx > 0 &&
+          ball.x + BALL_R >= p2.x &&
+          ball.x - BALL_R <= p2.x + PADDLE_W &&
+          ball.y >= p2.y && ball.y <= p2.y + PADDLE_H) {
+        ball.vx = -Math.abs(ball.vx) * 1.05;
+        const relY = (ball.y - (p2.y + PADDLE_H / 2)) / (PADDLE_H / 2);
+        ball.vy = relY * ball.speed;
+      }
+
+      if (ball.x < 0) { p2.score++; resetBall(); checkWin(); }
+      if (ball.x > W) { p1.score++; resetBall(); checkWin(); }
+
+      document.getElementById('score1').textContent = p1.score;
+      document.getElementById('score2').textContent = p2.score;
+    }
+
+    function checkWin() {
+      if (p1.score >= WIN_SCORE || p2.score >= WIN_SCORE) {
+        gameState = 'over';
+      }
+    }
+
+    function draw() {
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.setLineDash([8, 8]);
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(W / 2, 0);
+      ctx.lineTo(W / 2, H);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.shadowColor = ACCENT;
+      ctx.shadowBlur = 15;
+      ctx.fillStyle = ACCENT;
+      ctx.fillRect(p1.x, p1.y, PADDLE_W, PADDLE_H);
+      ctx.fillRect(p2.x, p2.y, PADDLE_W, PADDLE_H);
+
+      ctx.shadowBlur = 20;
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, BALL_R, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      if (gameState === 'start') drawOverlay('PONG', 'Press ENTER to start');
+      else if (gameState === 'paused') drawOverlay('PAUSED', 'Press SPACE to continue');
+      else if (gameState === 'over') {
+        const winner = p1.score >= WIN_SCORE ? 'P1' : 'P2';
+        drawOverlay('GAME OVER', `${winner} WINS!  ENTER to retry`);
+      }
+    }
+
+    function drawOverlay(text, sub) {
+      ctx.fillStyle = 'rgba(0,0,0,0.7)';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = ACCENT;
+      ctx.font = '24px "Press Start 2P"';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = ACCENT; ctx.shadowBlur = 20;
+      ctx.fillText(text, W / 2, H / 2 - 15);
+      if (sub) {
+        ctx.fillStyle = '#888'; ctx.font = '9px "Press Start 2P"'; ctx.shadowBlur = 0;
+        ctx.fillText(sub, W / 2, H / 2 + 25);
+      }
+    }
+
+    let animId;
+    function loop() {
+      update();
+      draw();
+      animId = requestAnimationFrame(loop);
+    }
+
+    document.addEventListener('keydown', e => {
+      keys[e.key] = true;
+      if (['ArrowUp','ArrowDown','Space','Enter'].includes(e.code)) e.preventDefault();
+      if (e.code === 'Enter' && (gameState === 'start' || gameState === 'over')) {
+        init(); gameState = 'playing';
+      }
+      if (e.code === 'Space') {
+        if (gameState === 'playing') gameState = 'paused';
+        else if (gameState === 'paused') gameState = 'playing';
+      }
+    });
+    document.addEventListener('keyup', e => keys[e.key] = false);
+
+    init(); draw(); loop();
+  </script>
+</body>
+</html>

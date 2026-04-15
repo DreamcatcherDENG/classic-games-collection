@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>扫雷</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a1a;
+      font-family: 'Press Start 2P', monospace;
+      overflow: hidden;
+    }
+
+    .back-btn {
+      position: fixed; top: 20px; left: 20px;
+      color: #666; font-size: 10px; text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+      transition: color 0.2s; z-index: 100;
+    }
+    .back-btn:hover { color: #ff6b6b; }
+    .back-btn::before { content: '\2190'; }
+
+    .game-container {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 20px;
+    }
+
+    .score-board {
+      display: flex; gap: 60px; color: #fff; font-size: 14px;
+    }
+    .score-item { text-align: center; }
+    .score-label { color: #888; font-size: 10px; margin-bottom: 8px; }
+    .score-value { color: #ff6b6b; font-size: 16px; }
+
+    #gameCanvas {
+      border: 4px solid #ff6b6b;
+      border-radius: 8px;
+      box-shadow: 0 0 40px rgba(255, 107, 107, 0.3);
+    }
+
+    .controls {
+      color: #666; font-size: 8px; text-align: center; line-height: 1.8;
+    }
+    .controls span { color: #ff6b6b; }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-btn">BACK</a>
+  <div class="game-container">
+    <div class="score-board">
+      <div class="score-item">
+        <div class="score-label">MINES</div>
+        <div class="score-value" id="mines">10</div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">TIME</div>
+        <div class="score-value" id="timer">000</div>
+      </div>
+    </div>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div class="controls">
+      <span>左键</span> 揭开 &nbsp;&nbsp; <span>右键</span> 标记 &nbsp;&nbsp; <span>ENTER</span> 新游戏
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const CELL_SIZE = W / 10;
+    const MINES = 10;
+    const COLORS = ['#0000ff', '#008000', '#ff0000', '#000080', '#800000', '#008080', '#000000', '#808080'];
+
+    let grid, minesLeft, gameOver, gameWon, startTime, timerInterval;
+
+    function init() {
+      grid = [];
+      minesLeft = MINES;
+      gameOver = false;
+      gameWon = false;
+      startTime = null;
+      clearInterval(timerInterval);
+      document.getElementById('mines').textContent = minesLeft;
+      document.getElementById('timer').textContent = '000';
+
+      for (let y = 0; y < 10; y++) {
+        grid[y] = [];
+        for (let x = 0; x < 10; x++) {
+          grid[y][x] = {
+            mine: false,
+            revealed: false,
+            flagged: false,
+            neighborMines: 0
+          };
+        }
+      }
+
+      placeMines();
+      calculateNumbers();
+    }
+
+    function placeMines() {
+      let placed = 0;
+      while (placed < MINES) {
+        const x = Math.floor(Math.random() * 10);
+        const y = Math.floor(Math.random() * 10);
+        if (!grid[y][x].mine) {
+          grid[y][x].mine = true;
+          placed++;
+        }
+      }
+    }
+
+    function calculateNumbers() {
+      for (let y = 0; y < 10; y++) {
+        for (let x = 0; x < 10; x++) {
+          if (!grid[y][x].mine) {
+            let count = 0;
+            for (let dy = -1; dy <= 1; dy++) {
+              for (let dx = -1; dx <= 1; dx++) {
+                const ny = y + dy, nx = x + dx;
+                if (ny >= 0 && ny < 10 && nx >= 0 && nx < 10 && grid[ny][nx].mine) {
+                  count++;
+                }
+              }
+            }
+            grid[y][x].neighborMines = count;
+          }
+        }
+      }
+    }
+
+    function reveal(x, y) {
+      if (x < 0 || x >= 10 || y < 0 || y >= 10 || grid[y][x].revealed || grid[y][x].flagged || gameOver) {
+        return;
+      }
+
+      if (!startTime) {
+        startTime = Date.now();
+        timerInterval = setInterval(updateTimer, 1000);
+      }
+
+      grid[y][x].revealed = true;
+
+      if (grid[y][x].mine) {
+        gameOver = true;
+        revealAllMines();
+        clearInterval(timerInterval);
+        return;
+      }
+
+      if (grid[y][x].neighborMines === 0) {
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            reveal(x + dx, y + dy);
+          }
+        }
+      }
+
+      checkWin();
+    }
+
+    function flag(x, y) {
+      if (gameOver || grid[y][x].revealed) return;
+
+      grid[y][x].flagged = !grid[y][x].flagged;
+      minesLeft += grid[y][x].flagged ? -1 : 1;
+      document.getElementById('mines').textContent = minesLeft;
+      checkWin();
+    }
+
+    function revealAllMines() {
+      for (let y = 0; y < 10; y++) {
+        for (let x = 0; x < 10; x++) {
+          if (grid[y][x].mine) {
+            grid[y][x].revealed = true;
+          }
+        }
+      }
+    }
+
+    function checkWin() {
+      if (gameOver) return;
+
+      let revealedCount = 0;
+      let flagCount = 0;
+      for (let y = 0; y < 10; y++) {
+        for (let x = 0; x < 10; x++) {
+          if (grid[y][x].revealed) revealedCount++;
+          if (grid[y][x].flagged && grid[y][x].mine) flagCount++;
+        }
+      }
+
+      if (revealedCount === 100 - MINES || flagCount === MINES) {
+        gameWon = true;
+        gameOver = true;
+        clearInterval(timerInterval);
+      }
+    }
+
+    function updateTimer() {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      document.getElementById('timer').textContent = elapsed.toString().padStart(3, '0');
+    }
+
+    function draw() {
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, 0, W, H);
+
+      for (let y = 0; y < 10; y++) {
+        for (let x = 0; x < 10; x++) {
+          const cell = grid[y][x];
+          const px = x * CELL_SIZE, py = y * CELL_SIZE;
+
+          if (cell.revealed) {
+            ctx.fillStyle = '#2a2a3e';
+            ctx.fillRect(px, py, CELL_SIZE, CELL_SIZE);
+            ctx.strokeStyle = '#333';
+            ctx.strokeRect(px, py, CELL_SIZE, CELL_SIZE);
+
+            if (cell.mine) {
+              ctx.fillStyle = '#ff6b6b';
+              ctx.beginPath();
+              ctx.arc(px + CELL_SIZE / 2, py + CELL_SIZE / 2, CELL_SIZE / 3, 0, Math.PI * 2);
+              ctx.fill();
+            } else if (cell.neighborMines > 0) {
+              ctx.fillStyle = COLORS[cell.neighborMines - 1];
+              ctx.font = 'bold 16px "Press Start 2P"';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(cell.neighborMines, px + CELL_SIZE / 2, py + CELL_SIZE / 2);
+            }
+          } else {
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(px, py, CELL_SIZE, CELL_SIZE);
+            ctx.strokeStyle = '#333';
+            ctx.strokeRect(px, py, CELL_SIZE, CELL_SIZE);
+
+            if (cell.flagged) {
+              ctx.fillStyle = '#ffeb3b';
+              ctx.beginPath();
+              ctx.moveTo(px + CELL_SIZE / 2, py + 5);
+              ctx.lineTo(px + CELL_SIZE - 8, py + CELL_SIZE - 8);
+              ctx.lineTo(px + 8, py + CELL_SIZE - 8);
+              ctx.closePath();
+              ctx.fill();
+            }
+          }
+        }
+      }
+
+      if (gameOver) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.fillStyle = gameWon ? '#4caf50' : '#ff6b6b';
+        ctx.font = '18px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = ctx.fillStyle;
+        ctx.shadowBlur = 20;
+        ctx.fillText(gameWon ? 'YOU WIN!' : 'GAME OVER', W / 2, H / 2 - 20);
+
+        ctx.fillStyle = '#888';
+        ctx.font = '8px "Press Start 2P"';
+        ctx.shadowBlur = 0;
+        ctx.fillText('Press ENTER for new game', W / 2, H / 2 + 30);
+      }
+    }
+
+    canvas.addEventListener('click', e => {
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.floor((e.clientX - rect.left) / CELL_SIZE);
+      const y = Math.floor((e.clientY - rect.top) / CELL_SIZE);
+      reveal(x, y);
+      draw();
+    });
+
+    canvas.addEventListener('contextmenu', e => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.floor((e.clientX - rect.left) / CELL_SIZE);
+      const y = Math.floor((e.clientY - rect.top) / CELL_SIZE);
+      flag(x, y);
+      draw();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.code === 'Enter') {
+        init();
+        draw();
+      }
+    });
+
+    init();
+    draw();
+  </script>
+</body>
+</html>

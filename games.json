@@ -1,0 +1,82 @@
+[
+  {
+    "id": "snake",
+    "name": "贪吃蛇",
+    "description": "控制蛇吃食物，避免撞墙或自身",
+    "path": "snake.html",
+    "thumbnail": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMxYTFhMmUiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIyMCIgZmlsbD0iIzAwZmY4OCIvPjxwYXRoIGQ9Ik01MCAzMCBMMjAgNTAgNTAgNzAgODAgNTAiIGZpbGw9IiMwMGZmODgiLz48L3N2Zz4=",
+    "rules": "方向键控制移动，空格暂停，回车开始/重玩。吃食物增长，撞墙或自身则游戏结束。"
+  },
+  {
+    "id": "tetris",
+    "name": "俄罗斯方块",
+    "description": "旋转下落方块，消除完整行",
+    "path": "tetris.html",
+    "thumbnail": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMxYTFhMmUiLz48cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iIzlkNGVkZCIvPjxyZWN0IHg9IjMwIiB5PSIxMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjOWQ0ZWRkIi8+PHJlY3QgeD0iMTAiIHk9IjMwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9IiM5ZDRlZGQiLz48cmVjdCB4PSIzMCIgeT0iMzAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iIzlkNGVkZCIvPjxyZWN0IHg9IjUwIiB5PSIxMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjMDBmZmZmIi8+PHJlY3QgeD0iNTAiIHk9IjMwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9IiMwMGZmZmYiLz48L3N2Zz4=",
+    "rules": "方向键左右移动，上旋转，下加速，空格暂停，回车开始。消除行得分，游戏结束条件为方块无法放置。"
+  },
+  {
+    "id": "pong",
+    "name": "乒乓球",
+    "description": "双人对战乒乓球游戏",
+    "path": "pong.html",
+    "thumbnail": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMxYTFhMmUiLz48cmVjdCB4PSIyMCIgeT0iNDAiIHdpZHRoPSI2IiBoZWlnaHQ9IjIwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iNzQiIHk9IjQwIiB3aWR0aD0iNiIgaGVpZ2h0PSIyMCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUiIGZpbGw9IiNmZmYiLz48L3N2Zz4=",
+    "rules": "W/S控制左侧球拍，↑/↓控制右侧球拍。球击中球拍反弹，先得11分者胜。"
+  },
+  {
+    "id": "space_invaders",
+    "name": "太空侵略者",
+    "description": "射击外星人，避免被击中",
+    "path": "space_invaders.html",
+    "thumbnail": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMxYTFhMmUiLz48cmVjdCB4PSIzMCIgeT0iMTAiIHdpZHRoPSI0MCIgaGVpZ2h0PSIyMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjQwIiB5PSIzMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMzAiIHk9IjUwIiB3aWR0aD0iNDAiIGhlaWdodD0iMjAiIGZpbGw9IiNmZmYiLz48L3N2Zz4=",
+    "rules": "方向键移动，空格射击。躲避外星人子弹，消灭所有外星人。"
+  },
+  {
+    "id": "pacman",
+    "name": "吃豆人",
+    "description": "在迷宫中吃豆子，躲避幽灵",
+    "path": "pacman.html",
+    "thumbnail": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMxYTFhMmUiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0iI2ZmZCIvPjxwYXRoIGQ9Ik01MCA1MCBMMzAgMzAgNTAgNTAgMzAgNzAiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC44Ii8+PHJlY3QgeD0iMzAiIHk9IjQwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSI3MCIgeT0iNDAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==",
+    "rules": "方向键移动，吃豆子和能量球。能量球可吃掉幽灵。"
+  },
+  {
+    "id": "minesweeper",
+    "name": "扫雷",
+    "description": "点击安全格，避免地雷",
+    "path": "minesweeper.html",
+    "thumbnail": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMxYTFhMmUiLz48ZyBmaWxsPSIjZmZmIj48cmVjdCB4PSIyMCIgeT0iMjAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgc3Ryb2tlPSIjZmZmIi8+PHJlY3QgeD0iNDAiIHk9IjIwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHN0cm9rZT0iI2ZmZiIvPjxyZWN0IHg9IjYwIiB5PSIyMCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBzdHJva2U9IiNmZmYiLz48cmVjdCB4PSIyMCIgeT0iNDAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgc3Ryb2tlPSIjZmZmIi8+PHJlY3QgeD0iNDAiIHk9IjQwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHN0cm9rZT0iI2ZmZiIvPjxyZWN0IHg9IjYwIiB5PSI0MCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBzdHJva2U9IiNmZmYiLz48cmVjdCB4PSIyMCIgeT0iNjAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgc3Ryb2tlPSIjZmZmIi8+PHJlY3QgeD0iNDAiIHk9IjYwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHN0cm9rZT0iI2ZmZiIvPjxyZWN0IHg9IjYwIiB5PSI2MCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBzdHJva2U9IiNmZmYiLz48L2c+PHJlY3QgeD0iNDAiIHk9IjQwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiNmZjAwMDAiLz48L3N2Zz4=",
+    "rules": "点击格子，数字表示周围地雷数。标记地雷，避免点击。"
+  },
+  {
+    "id": "sudoku",
+    "name": "数独",
+    "description": "填写数字，避免重复",
+    "path": "sudoku.html",
+    "thumbnail": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMxYTFhMmUiLz48ZyBmaWxsPSIjZmZmIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSI+PHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iODAiIGhlaWdodD0iODAiLz48cmVjdCB4PSIzMCIgeT0iMTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSI4MCIvPjxyZWN0IHg9IjUwIiB5PSIxMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjgwIi8+PHJlY3QgeD0iMTAiIHk9IjMwIiB3aWR0aD0iODAiIGhlaWdodD0iMjAiLz48cmVjdCB4PSIxMCIgeT0iNTAiIHdpZHRoPSI4MCIgaGVpZ2h0PSIyMCIvPjwvZz48ZyBmaWxsPSIjZmZmIj48dGV4dCB4PSIyNSIgeT0iMjUiIGZvbnQtZmFtaWx5PSJQcmVzcyBTdGFydCAyUCIgZm9udC1zaXplPSIxMHB4Ij4xPC90ZXh0Pjx0ZXh0IHg9IjQ1IiB5PSIyNSIgZm9udC1mYW1pbHk9IlByZXNzIFN0YXJ0IDIwIiBmb250LXNpemU9IjEwcHgiPjI8L3RleHQ+PHRleHQgeD0iNjUiIHk9IjI1IiBmb250LWZhbWlseT0iUHJlc3MgU3RhcnQgMlAiIGZvbnQtc2l6ZT0iMTBweCI+MzwvdGV4dD48L2c+PC9zdmc+",
+    "rules": "填写1-9数字，每行、列、3x3宫格不重复。"
+  },
+  {
+    "id": "solitaire",
+    "name": "纸牌",
+    "description": "移动纸牌到基础堆",
+    "path": "solitaire.html",
+    "thumbnail": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMxYTFhMmUiLz48cmVjdCB4PSIyMCIgeT0iMjAiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjQwIiB5PSI0MCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZmYwMDAwIi8+PHJlY3QgeD0iNjAiIHk9IjQwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9IiMwMDAwZmYiLz48cmVjdCB4PSI4MCIgeT0iNDAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iIzAwZmYwMCIvPjwvc3ZnPg==",
+    "rules": "移动纸牌到基础堆，按花色和顺序排列。"
+  },
+  {
+    "id": "flappy_bird",
+    "name": "Flappy Bird",
+    "description": "点击使鸟飞过管道",
+    "path": "flappy_bird.html",
+    "thumbnail": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMxYTFhMmUiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSIxMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjMwIiB5PSI0MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMzAiIHk9IjIwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSI3MCIgeT0iMjAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjcwIiB5PSI2MCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMzAiIHk9IjYwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSI1MCIgeT0iMzAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==",
+    "rules": "点击使鸟上升，避免撞击管道。通过管道得分。"
+  },
+  {
+    "id": "breakout",
+    "name": "打砖块",
+    "description": "用球击碎所有砖块",
+    "path": "breakout.html",
+    "thumbnail": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9IiMxYTFhMmUiLz48cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSI4MCIgaGVpZ2h0PSIyMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjEwIiB5PSI0MCIgd2lkdGg9IjgwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMTAiIHk9IjcwIiB3aWR0aD0iODAiIGhlaWdodD0iMjAiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSI1MCIgY3k9IjkwIiByPSI1IiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iNDUiIHk9Ijk1IiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9IiNmZmYiLz48L3N2Zz4=",
+    "rules": "方向键控制挡板，用球击碎砖块。球掉到底部则游戏结束。"
+  }
+]

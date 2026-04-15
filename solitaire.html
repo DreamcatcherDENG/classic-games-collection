@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>纸牌</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a1a;
+      font-family: 'Press Start 2P', monospace;
+      overflow: hidden;
+    }
+
+    .back-btn {
+      position: fixed; top: 20px; left: 20px;
+      color: #666; font-size: 10px; text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+      transition: color 0.2s; z-index: 100;
+    }
+    .back-btn:hover { color: #e91e63; }
+    .back-btn::before { content: '\2190'; }
+
+    .game-container {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 20px;
+    }
+
+    .score-board {
+      display: flex; gap: 60px; color: #fff; font-size: 14px;
+    }
+    .score-item { text-align: center; }
+    .score-label { color: #888; font-size: 10px; margin-bottom: 8px; }
+    .score-value { color: #e91e63; font-size: 16px; }
+
+    #gameCanvas {
+      border: 4px solid #e91e63;
+      border-radius: 8px;
+      box-shadow: 0 0 40px rgba(233, 30, 99, 0.3);
+    }
+
+    .controls {
+      color: #666; font-size: 8px; text-align: center; line-height: 1.8;
+    }
+    .controls span { color: #e91e63; }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-btn">BACK</a>
+  <div class="game-container">
+    <div class="score-board">
+      <div class="score-item">
+        <div class="score-label">MOVES</div>
+        <div class="score-value" id="moves">0</div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">SCORE</div>
+        <div class="score-value" id="score">0</div>
+      </div>
+    </div>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <div class="controls">
+      <span>点击</span> 选牌 &nbsp;&nbsp; <span>再次点击</span> 移动 &nbsp;&nbsp; <span>SPACE</span> 撤销 &nbsp;&nbsp; <span>ENTER</span> 新游戏
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const CARD_WIDTH = 50, CARD_HEIGHT = 70;
+
+    let deck, foundations, tableau, moves, score, selectedCard, history;
+
+    const suits = ['♠', '♥', '♦', '♣'];
+    const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+    const suitColors = { '♠': '#000', '♣': '#000', '♥': '#ff0000', '♦': '#ff0000' };
+
+    function createDeck() {
+      const cards = [];
+      for (let suit of suits) {
+        for (let i = 0; i < values.length; i++) {
+          cards.push({ suit, value: values[i], numValue: i + 1 });
+        }
+      }
+      return cards;
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function init() {
+      const cards = shuffle(createDeck());
+      deck = [];
+      foundations = [[], [], [], []];
+      tableau = [];
+      moves = 0;
+      score = 0;
+      selectedCard = null;
+      history = [];
+
+      for (let i = 0; i < 7; i++) {
+        tableau[i] = [];
+        for (let j = 0; j <= i; j++) {
+          const card = cards.pop();
+          tableau[i].push({ ...card, faceUp: j === i });
+        }
+      }
+
+      while (cards.length > 0) {
+        deck.push(cards.pop());
+      }
+
+      updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById('moves').textContent = moves;
+      document.getElementById('score').textContent = score;
+    }
+
+    function drawCard(card, x, y, selected = false) {
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(x, y, CARD_WIDTH, CARD_HEIGHT);
+
+      ctx.strokeStyle = selected ? '#00ff00' : '#000';
+      ctx.lineWidth = selected ? 3 : 2;
+      ctx.strokeRect(x, y, CARD_WIDTH, CARD_HEIGHT);
+
+      if (card.faceUp) {
+        ctx.fillStyle = suitColors[card.suit];
+        ctx.font = 'bold 14px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(card.value, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 3);
+        ctx.fillText(card.suit, x + CARD_WIDTH / 2, y + CARD_HEIGHT * 2 / 3);
+      } else {
+        ctx.fillStyle = '#0066cc';
+        ctx.fillRect(x + 5, y + 5, CARD_WIDTH - 10, CARD_HEIGHT - 10);
+        ctx.strokeStyle = '#003366';
+        ctx.strokeRect(x + 5, y + 5, CARD_WIDTH - 10, CARD_HEIGHT - 10);
+      }
+    }
+
+    function draw() {
+      ctx.fillStyle = '#2a4d3a';
+      ctx.fillRect(0, 0, W, H);
+
+      for (let i = 0; i < 4; i++) {
+        if (foundations[i].length > 0) {
+          const topCard = foundations[i][foundations[i].length - 1];
+          drawCard(topCard, 20 + i * (CARD_WIDTH + 20), 20, selectedCard === topCard);
+        } else {
+          ctx.strokeStyle = '#666';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(20 + i * (CARD_WIDTH + 20), 20, CARD_WIDTH, CARD_HEIGHT);
+        }
+      }
+
+      for (let col = 0; col < 7; col++) {
+        for (let row = 0; row < tableau[col].length; row++) {
+          const card = tableau[col][row];
+          drawCard(card, 50 + col * (CARD_WIDTH + 30), 120 + row * 25, selectedCard === card);
+        }
+      }
+
+      if (deck.length > 0) {
+        drawCard({ faceUp: false }, W - CARD_WIDTH - 20, H - CARD_HEIGHT - 20);
+        ctx.fillStyle = '#fff';
+        ctx.font = '10px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText(deck.length, W - 20, H - 20);
+      }
+
+      checkWin();
+    }
+
+    function checkWin() {
+      if (foundations.every(foundation => foundation.length === 13)) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.fillStyle = '#4caf50';
+        ctx.font = '24px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = '#4caf50';
+        ctx.shadowBlur = 20;
+        ctx.fillText('YOU WIN!', W / 2, H / 2);
+        ctx.shadowBlur = 0;
+
+        ctx.fillStyle = '#888';
+        ctx.font = '10px "Press Start 2P"';
+        ctx.fillText(`Moves: ${moves}  Score: ${score}`, W / 2, H / 2 + 40);
+      }
+    }
+
+    function getMousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    }
+
+    function findClickedCard(x, y) {
+      if (x >= W - CARD_WIDTH - 20 && x <= W - 20 && y >= H - CARD_HEIGHT - 20 && y <= H - 20) {
+        return { type: 'deck' };
+      }
+
+      for (let i = 0; i < 4; i++) {
+        if (x >= 20 + i * (CARD_WIDTH + 20) && x <= 20 + i * (CARD_WIDTH + 20) + CARD_WIDTH &&
+            y >= 20 && y <= 20 + CARD_HEIGHT && foundations[i].length > 0) {
+          return { type: 'foundation', foundation: i, card: foundations[i][foundations[i].length - 1] };
+        }
+      }
+
+      for (let col = 0; col < 7; col++) {
+        for (let row = tableau[col].length - 1; row >= 0; row--) {
+          const cardY = 120 + row * 25;
+          if (x >= 50 + col * (CARD_WIDTH + 30) && x <= 50 + col * (CARD_WIDTH + 30) + CARD_WIDTH &&
+              y >= cardY && y <= cardY + CARD_HEIGHT) {
+            return { type: 'tableau', col, row, card: tableau[col][row] };
+          }
+        }
+      }
+
+      return null;
+    }
+
+    function canMoveToFoundation(card, foundationIndex) {
+      const foundation = foundations[foundationIndex];
+      if (foundation.length === 0) {
+        return card.numValue === 1;
+      }
+      const topCard = foundation[foundation.length - 1];
+      return card.suit === topCard.suit && card.numValue === topCard.numValue + 1;
+    }
+
+    function canMoveToTableau(card, col) {
+      const pile = tableau[col];
+      if (pile.length === 0) {
+        return card.numValue === 13;
+      }
+      const topCard = pile[pile.length - 1];
+      return card.numValue === topCard.numValue - 1;
+    }
+
+    canvas.addEventListener('click', e => {
+      const pos = getMousePos(e);
+      const clicked = findClickedCard(pos.x, pos.y);
+
+      if (!clicked) return;
+
+      if (clicked.type === 'deck') {
+        const card = deck.pop();
+        card.faceUp = true;
+        tableau[0].push(card);
+        moves++;
+        updateUI();
+      } else if (clicked.card) {
+        if (!selectedCard) {
+          selectedCard = clicked;
+        } else if (selectedCard === clicked) {
+          selectedCard = null;
+        } else {
+          history.push({
+            selected: selectedCard,
+            target: clicked,
+            gameState: JSON.parse(JSON.stringify({ foundations, tableau, deck, moves, score }))
+          });
+
+          if (selectedCard.type === 'tableau') {
+            if (clicked.type === 'foundation' && canMoveToFoundation(selectedCard.card, clicked.foundation)) {
+              const pile = tableau[selectedCard.col];
+              tableau[selectedCard.col].splice(selectedCard.row);
+              foundations[clicked.foundation].push(selectedCard.card);
+              score += 10;
+            } else if (clicked.type === 'tableau' && canMoveToTableau(selectedCard.card, clicked.col)) {
+              const pile = tableau[selectedCard.col];
+              tableau[clicked.col].push(...pile.splice(selectedCard.row));
+              moves += selectedCard.row;
+            }
+          } else if (selectedCard.type === 'foundation') {
+            if (clicked.type === 'tableau' && canMoveToTableau(selectedCard.card, clicked.col)) {
+              foundations[selectedCard.foundation].pop();
+              tableau[clicked.col].push(selectedCard.card);
+            }
+          }
+          moves++;
+          selectedCard = null;
+          updateUI();
+        }
+        draw();
+      }
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.code === 'Backspace' && history.length > 0) {
+        const lastMove = history.pop();
+        foundations = lastMove.gameState.foundations;
+        tableau = lastMove.gameState.tableau;
+        deck = lastMove.gameState.deck;
+        moves = lastMove.gameState.moves;
+        score = lastMove.gameState.score;
+        selectedCard = null;
+        updateUI();
+        draw();
+      } else if (e.code === 'Enter') {
+        init();
+        draw();
+      }
+    });
+
+    init();
+    draw();
+  </script>
+</body>
+</html>
